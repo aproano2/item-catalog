@@ -1,0 +1,61 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row divider green">  
+  <div class="col-md-12"></div>  
+</div>
+
+<div class="row banner main">  
+  <div class="col-md-11 col-md-offset-1 padding-none">    
+    <h1>New Item</h1>    
+  </div>  
+</div>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-1 padding-top">
+    <form action="#" method = "post">
+      <div class="form-group">
+	<label for="name">Name:</label>
+	<input type ="text" maxlength="50" class="form-control" name="name"
+	       placeholder="Name of the activity">
+	<label for="description">
+	  Description:
+	</label>
+	<textarea class="form-control" maxlength="250" rows="3" name="description"
+		  placeholder="Description of the activity"></textarea>
+        <label for="category">
+	  Category:
+	</label>
+        <div class="radio">
+          <label>
+            <input type="radio" name="category" id="category1" value="Summer">
+	    Summer
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="category" id="category2" value="Winter">
+	    Winter
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="category" id="category3" value="Fall">
+	    Fall
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="category" id="category4" value="Spring">
+	    Spring
+          </label>
+        </div>
+	<button id="submit" type="submit">
+	  Create New Item
+	</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
