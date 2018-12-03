@@ -173,7 +173,7 @@ def gdisconnect():
 
 
 # JSON APIs to view Categories
-@app.route('/catalog/<int:category_id>/JSON')
+@app.route('/categories/<int:category_id>/JSON')
 def categoryItemsJSON(category_id):
     session = DBSession()
     items = session.query(Item).filter_by(
@@ -188,7 +188,7 @@ def ItemJSON(item_id):
     return jsonify(Item=item.serialize)
 
 
-@app.route('/catalog/JSON')
+@app.route('/categories/JSON')
 def categoriesJSON():
     session = DBSession()
     categories = session.query(Category).all()
@@ -205,8 +205,8 @@ def showCategories():
     return render_template('catalog.html', categories=categories, items=items)
 
 # Show a items per category
-@app.route('/category/<int:category_id>/')
-@app.route('/category/<int:category_id>/items/')
+@app.route('/categories/<int:category_id>/')
+@app.route('/categories/<int:category_id>/items/')
 def showItems(category_id):
     session = DBSession()
     category = session.query(Category).filter_by(id=category_id).one()
