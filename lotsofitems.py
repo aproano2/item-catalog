@@ -26,7 +26,7 @@ session.add(User1)
 session.commit()
 
 # Summer Activities
-category1 = Category(name="Summer Activities")
+category1 = Category(name="Summer")
 
 session.add(category1)
 session.commit()
@@ -49,7 +49,7 @@ session.add(item3)
 session.commit()
 
 
-category2 = Category(name="Winter Activities")
+category2 = Category(name="Winter")
 
 session.add(category2)
 session.commit()
@@ -72,7 +72,7 @@ session.add(item6)
 session.commit()
 
 
-category3 = Category(name="Fall Activities")
+category3 = Category(name="Fall")
 
 session.add(category3)
 session.commit()
@@ -93,7 +93,7 @@ item9 = Item(user_id=1, name="Drama",
 session.add(item9)
 session.commit()
 
-category4 = Category(name="Spring Activities")
+category4 = Category(name="Spring")
 
 session.add(category4)
 session.commit()
