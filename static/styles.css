@@ -56,9 +56,8 @@ h3 {
 .btn {
 	padding: 20px;
 	margin: 0;
-	border-color: #9FB80A;
 	border-width: 2px;
-	color: #9FB80A;;
+	background-color: #6495ED;
 }
 .btn:hover {
 	border-color: #9FB80A;
@@ -118,7 +117,7 @@ h3 {
 	margin: 20px;
 	margin-left: -20px;
 }
-.creator {
+.left_button {
 	padding-right: 20px;
 	margin-top: -20px;
 	text-align: right;

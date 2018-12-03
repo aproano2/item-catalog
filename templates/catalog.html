@@ -30,21 +30,26 @@
   {% endwith %}  
 </div>
 
-
 <div class="padding-top"></div>
 <div class="col-md-20 col-md-offset-1 margin-right">
-<div class="intro">
-  Welcome to our activity catalog. This system allows you to discover many programs, sports and classes that kids and adults can enjoy in each season of the year. Our activities include certified instructors and professional equiptment. For registration, contact us directly at our main locations.
-
-  For a detail description of our available activities, please click in any of the following seasons.
-
-  <p> </p>
-  {% for category in categories %}
-  <a href = "{{url_for('showItems', category_id = category.id)}}">      
-    | {{category.name}} |
-  </a>
-  {% endfor %}
+  <div class="intro">
+    
+    Welcome to our activity catalog. This system allows you to discover many programs, sports and classes that kids and adults can enjoy in each season of the year. Our activities include certified instructors and professional equiptment. For registration, contact us directly at our main locations.
+    
+    For a detail description of our available activities, please click in any of the following seasons.    
+    <p> </p>    
+    {% for category in categories %}    
+    <a href = "{{url_for('showItems', category_id = category.id)}}">      
+      | {{category.name}} |      
+    </a>    
+    {% endfor %}    
+  </div>
+  <a href="{{url_for('newItem')}}">    
+    <button>      
+      Create New Item      
+    </button>    
+  </a>  
 </div>
-</div>
+
 	  
 {% endblock %}
