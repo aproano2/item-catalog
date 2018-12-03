@@ -77,7 +77,7 @@ def gconnect():
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-
+    
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
@@ -93,7 +93,7 @@ def gconnect():
                                  200)
         response.headers['Content-Type'] = 'application/json'
         return response
-
+    
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
@@ -110,7 +110,7 @@ def gconnect():
     login_session['email'] = data['email']
     # ADD PROVIDER TO LOGIN SESSION
     login_session['provider'] = 'google'
-
+    
     # see if user exists, if it doesn't make a new one
     user_id = getUserID(data["email"])
     if not user_id:
@@ -125,7 +125,6 @@ def gconnect():
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
-    print "done!"
     return output
 
 # User Helper Functions
@@ -182,7 +181,7 @@ def categoryItemsJSON(category_id):
     return jsonify(Items=[i.serialize for i in items])
 
 
-@app.route('/catalog/<int:item_id>/JSON')
+@app.route('/item/<int:item_id>/JSON')
 def ItemJSON(item_id):
     session = DBSession()
     item = session.query(Item).filter_by(id=item_id).one()
@@ -202,13 +201,10 @@ def categoriesJSON():
 def showCategories():
     session = DBSession()
     categories = session.query(Category).order_by(asc(Category.name))
-    return render_template('catalog.html', categories=categories)
-
-
+    items = session.query(Item).limit(5)
+    return render_template('catalog.html', categories=categories, items=items)
 
 # Show a items per category
-
-
 @app.route('/category/<int:category_id>/')
 @app.route('/category/<int:category_id>/items/')
 def showItems(category_id):
@@ -217,6 +213,69 @@ def showItems(category_id):
     items = session.query(Item).filter_by(category_id=category_id).all()
     return render_template('items.html', items=items, category=category)
 
+# Show item
+@app.route('/item/<int:item_id>/')
+def showSingleItem(item_id):
+    session = DBSession()
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('showitem.html', item=item)
+
+# Create an item
+@app.route('/item/new/', methods=['GET', 'POST'])
+def newItem():
+    session = DBSession()
+    if 'username' not in login_session:
+        return redirect('/login')
+    if request.method == 'POST':
+        if not request.form['name'] or not request.form['description'] or not request.form['category']: 
+            return render_template('newitem.html')    
+        category = session.query(Category).filter_by(name=request.form['category']).one()
+        itemNew = Item(name=request.form['name'], description=request.form['description'],
+                       category_id=category.id, user_id=login_session['user_id'])
+        session.add(itemNew)
+        session.commit()
+        flash('New Menu %s Item Successfully Created' % (itemNew.name))
+        return redirect(url_for('showSingleItem', item_id=itemNew.id))
+    else:
+        return render_template('newitem.html')
+
+# Edit an item
+@app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
+def editItem(item_id):
+    session = DBSession()
+    if 'username' not in login_session:
+        return redirect('/login')
+    editedItem = session.query(Item).filter_by(id=item_id).one()
+    if login_session['user_id'] != editedItem.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to edit  this item. Please create your own items in order to edit.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
+        if request.form['name']:
+            editedItem.name = request.form['name']
+        if request.form['description']:
+            editedItem.description = request.form['description']
+        session.add(editedItem)
+        session.commit()
+        flash('Item Successfully Edited')
+        return redirect(url_for('showSingleItem', item_id=editedItem.id))
+    else:
+        return render_template('edititem.html', item=editedItem)
+
+# Delete an item
+@app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
+def deleteItem(item_id):
+    session = DBSession()
+    if 'username' not in login_session:
+        return redirect('/login')
+    itemToDelete = session.query(Item).filter_by(id=item_id).one()
+    if login_session['user_id'] != itemToDelete.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to delete this item. Please create your own items in order to delete.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        flash('Item Successfully Deleted')
+        return redirect(url_for('showCategories'))
+    else:
+        return render_template('deleteitem.html', item=itemToDelete)
 
 # Disconnect based on provider
 @app.route('/disconnect')
@@ -226,6 +285,7 @@ def disconnect():
             gdisconnect()
             del login_session['gplus_id']
             del login_session['access_token']
+
         del login_session['username']
         del login_session['email']
         del login_session['picture']
