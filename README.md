@@ -57,7 +57,7 @@ Additionally, the application also includes JSON endpoints that would dump diffe
 }
 ```
  
-Similarly, you could access the endpoints [http://localhost:5000/categories/CATEGORY_ID/JSON](http://localhost:5000/categories/category_id/JSON) and [http://localhost:5000/item/ITEM_ID//JSON](http://localhost:5000/item/item_id/JSON), to access the items of a single category and a single item, respectively.  
+Similarly, the endpoints [http://localhost:5000/categories/CATEGORY_ID/JSON](http://localhost:5000/categories/category_id/JSON) and [http://localhost:5000/item/ITEM_ID/JSON](http://localhost:5000/item/item_id/JSON) give access to the items of a single category and a single item, respectively.  
 
  
 
