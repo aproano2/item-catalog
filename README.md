@@ -8,14 +8,14 @@ This repo includes the HTML, CSS and python files used to start the applications
 $ pip install -r requirements.txt
 ```
 
-To run the application, you are required to have your own Google API secrets. To get started, please go to this [link] (https://console.developers.google.com/apis/credentials). Detailed documentation can be found [here](https://developers.google.com/identity/protocols/OAuth2). The activity catalog application requires that the `Authorized JavaScript origins` and the `Authorized redirect URIs` are set.
+To run the application, you are required to have your own Google API secrets. To get started, please go to this [link](https://console.developers.google.com/apis/credentials). Detailed documentation can be found [here](https://developers.google.com/identity/protocols/OAuth2). The activity catalog application requires that the `Authorized JavaScript origins` and the `Authorized redirect URIs` are set.
 
 Once you have successfully created your cretendials, please download the JSON file from Google and name it `client_secrets.json`. A sample file is included in this repo for reference. 
 
 To initialize the database run:
 
 ```
-$ python database_setup.p 
+$ python database_setup.py 
 ```
 
 If you want to add some data examples, please run:
