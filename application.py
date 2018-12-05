@@ -3,7 +3,8 @@ import string
 import json
 import requests
 import httplib2
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, make_response
+from flask import Flask, render_template, request, redirect, jsonify, url_for,\
+                  flash, make_response
 from flask import session as login_session
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -12,14 +13,10 @@ from oauth2client.client import FlowExchangeError
 from database_setup import Base, Category, Item, User
 
 
-
-
-
 app = Flask(__name__)
-
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+secrets = json.loads(open('client_secrets.json', 'r').read())
+CLIENT_ID = secrets['web']['client_id']
 APPLICATION_NAME = "Item Catalog Application"
-
 
 # Connect to Database and create database session
 engine = create_engine('sqlite:///catalog.db')
@@ -84,15 +81,16 @@ def gconnect():
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
-        response = make_response(json.dumps("Token's client ID does not match app's."), 401)
+        json_response = json.dumps("Token's client ID does not match app's.")
+        response = make_response(json_response, 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        json_reponse = json.dumps('Current user is already connected.')
+        response = make_response(json_response, 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -124,8 +122,9 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: \
-                  150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: \
+                  150px;-webkit-border-radius: 150px;-moz-border-radius: \
+                  150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
@@ -188,10 +187,12 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] == '200':
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        json_response = json.dumps('Successfully disconnected.')
+        response = make_response(json_response, 200)
         response.headers['Content-Type'] = 'application/json'
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        json_response = json.dumps('Failed to revoke token for given user.')
+        response = make_response(json_response, 400)
         response.headers['Content-Type'] = 'application/json'
     return response
 
@@ -277,11 +278,16 @@ def newItem():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        if not request.form['name'] or not request.form['description'] or not request.form['category']:
+        if not request.form['name'] or not request.form['description']: 
             return render_template('newitem.html')
-        category = session.query(Category).filter_by(name=request.form['category']).one()
-        itemnew = Item(name=request.form['name'], description=request.form['description'],
-                       category_id=category.id, user_id=login_session['user_id'])
+        if not request.form['category']:
+            return render_template('newitem.html')
+        category = session.query(Category)
+        category = category.filter_by(name=request.form['category']).one()
+        itemnew = Item(name=request.form['name'],
+                       description=request.form['description'],
+                       category_id=category.id,
+                       user_id=login_session['user_id'])
         session.add(itemnew)
         session.commit()
         flash('New Menu %s Item Successfully Created' % itemnew.name)
@@ -299,8 +305,9 @@ def editItem(item_id):
         return redirect('/login')
     editeditem = session.query(Item).filter_by(id=item_id).one()
     if login_session['user_id'] != editeditem.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to edit  this item. Please create your \
-                own items in order to edit.');}</script><body onload='myFunction()'>"
+        return "<script>function myFunction() {alert('You are not authorized \
+                to edit  this item. Please create your own items in order to \
+                edit.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         if request.form['name']:
             editeditem.name = request.form['name']
@@ -323,8 +330,9 @@ def deleteItem(item_id):
         return redirect('/login')
     itemtodelete = session.query(Item).filter_by(id=item_id).one()
     if login_session['user_id'] != itemtodelete.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to delete this item. Please create your \
-                own items in order to delete.');}</script><body onload='myFunction()'>"
+        return "<script>function myFunction() {alert('You are not authorized \
+                to delete this item. Please create your own items in order to \
+                delete.');}</script><body onload='myFunction()'>"
     if request.method == 'POST':
         session.delete(itemtodelete)
         session.commit()
@@ -336,8 +344,8 @@ def deleteItem(item_id):
 
 @app.route('/disconnect')
 def disconnect():
-    """Disconnect an user from the application by freeing resources in the login_session
-    flask object
+    """Disconnect an user from the application by freeing resources in the 
+       login_session flask object
     """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
